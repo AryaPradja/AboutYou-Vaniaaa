@@ -1,0 +1,13 @@
+/* Style umum untuk desktop */
+body {
+    font-size: 20px;
+    padding: 20px;
+}
+
+/* Style khusus untuk layar kecil (HP) */
+@media (max-width: 600px) {
+    body {
+        font-size: 16px; /* Sesuaikan ukuran teks */
+        padding: 10px; /* Sesuaikan padding */
+    }
+}

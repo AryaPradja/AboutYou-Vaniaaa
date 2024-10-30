@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Lyrics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet"> <!-- Add a romantic font -->
+    <style>
+        @keyframes slideUp {
+            0% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+        @keyframes fall {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+        .slide-up {
+            animation: slideUp 1s ease-in-out forwards;
+        }
+        .fade-out {
+            animation: fadeOut 2s ease-in-out forwards;
+        }
+        .lyric-text {
+            font-family: 'Great Vibes', cursive; /* Use the romantic font */
+            font-size: 4rem; /* Double the size */
+            color: #FF69B4; /* Pink color for lyrics */
+            position: relative; /* Change position to relative */
+            margin: 0; /* Remove any margin to prevent layout issues */
+        }
+        .flower {
+            position: absolute;
+            background-color: #FF69B4; /* Pink color */
+            border-radius: 50%;
+            width: 10px; /* Adjust size of the flower */
+            height: 10px; /* Adjust size of the flower */
+            opacity: 0; /* Start invisible */
+            animation: fall linear forwards;
+        }
+    </style>
+</head>
+<body class="bg-cover bg-center min-h-screen relative" style="background-image: url(background.jpeg); overflow: hidden;">
+    <audio id="audio" controls>
+        <source src="About You.mpeg" type="audio/mpeg">
+    </audio>
+    <div id="lyrics-container" class="text-left p-4"></div>
+
+    <script>
+        const lyrics = [
+            "There was something about you that now I can't remember",
+            "It's the same damn thing that made my heart surrender",
+            "And I'll miss you on a train",
+            "I'll miss you in the morning",
+            "I never know what to think about, so think about you",
+            "(I think about you)",
+            
+        ];
+
+        const container = document.getElementById('lyrics-container');
+        const audio = document.getElementById('audio');
+
+        let currentLineIndex = 0; // Initialize current line index
+
+        // Adjustable timings
+        const entryDuration = 1000; // Duration for entry in milliseconds
+        const displayDuration = 3000; // Duration to display the lyric
+        const exitDuration = 1200; // Duration for exit in milliseconds
+
+        function getRandomPosition() {
+            const x = Math.floor(Math.random() * (window.innerWidth - 400)); // Adjusted for larger text
+            return x; // Return only x for horizontal positioning
+        }
+
+        function createFlower() {
+            const flower = document.createElement('div');
+            flower.classList.add('flower');
+            const x = Math.floor(Math.random() * window.innerWidth); // Random x position
+            flower.style.left = `${x}px`;
+            flower.style.top = '0px'; // Start at the top of the screen
+
+            // Set random animation duration and delay
+            const duration = Math.random() * 3 + 2; // Between 2s and 5s
+            flower.style.animationDuration = `${duration}s`;
+            flower.style.animationDelay = `${Math.random() * 2}s`; // Random delay
+
+            document.body.appendChild(flower);
+
+            // Remove flower after it falls
+            setTimeout(() => {
+                flower.remove();
+            }, (duration + 1) * 1000); // Remove after falling
+        }
+
+        function showNextLine() {
+            if (currentLineIndex < lyrics.length) {
+                const line = document.createElement('p');
+                line.textContent = lyrics[currentLineIndex];
+                line.classList.add('slide-up', 'lyric-text'); // Use the new class for styling
+                line.style.left = `${getRandomPosition()}px`;
+                container.appendChild(line);
+                
+                // Increment the current line index
+                currentLineIndex++;
+                
+                // Set a timeout to fade out the line after the display duration
+                setTimeout(() => {
+                    line.classList.add('fade-out');
+                    setTimeout(() => {
+                        line.remove();
+                        showNextLine(); // Show the next line after the current one fades out
+                    }, exitDuration); // Use the exit duration for fading out
+                }, displayDuration); // Use the display duration for showing each line
+            }
+        }
+
+        // Start showing lyrics once the audio is playing
+        audio.addEventListener('canplaythrough', () => {
+            showNextLine(); // Start showing lyrics when audio is ready to play
+            setInterval(createFlower, 500); // Create flowers every 500ms
+        });
+
+        // Start playing the audio when the user interacts
+        window.addEventListener('click', () => {
+            audio.play();
+        });
+
+    </script>
+</body>
+</html>
